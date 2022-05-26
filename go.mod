@@ -1,4 +1,4 @@
-module github.com/tvanriel/cpu-emu
+module github.com/tvanriel/vm
 
 go 1.17
 

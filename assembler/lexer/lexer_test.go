@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	lex "github.com/bbuck/go-lexer"
-	"github.com/tvanriel/cpu-emulator/assembler/lexer"
+	"github.com/tvanriel/vm/assembler/lexer"
 )
 
 func ReadFile(filename string) string {
@@ -19,9 +19,8 @@ func ReadFile(filename string) string {
 func Test_LexTest(t *testing.T) {
 	expected := []lex.Token{
 		{Type: lexer.CommentToken, Value: "; a comment here"},
-		{Type: lexer.PeriodSign, Value: "."},
-		{Type: lexer.DirectiveToken, Value: "org"},
-		{Type: lexer.HexadecimalToken, Value: "0x10000"},
+		{Type: lexer.LabelToken, Value: "main"},
+		{Type: lexer.ColonSign, Value: ":"},
 		{Type: lexer.InstructionToken, Value: "lda"},
 		{Type: lexer.HexadecimalToken, Value: "0xDEADBEEFDEADBEEF"},
 		{Type: lexer.InstructionToken, Value: "ldb"},
@@ -34,11 +33,6 @@ func Test_LexTest(t *testing.T) {
 		{Type: lexer.WordToken, Value: "label"},
 		{Type: lexer.LabelToken, Value: "label"},
 		{Type: lexer.ColonSign, Value: ":"},
-		{Type: lexer.PeriodSign, Value: "."},
-		{Type: lexer.DirectiveToken, Value: "org"},
-		{Type: lexer.HexadecimalToken, Value: "0x1fff6"},
-		{Type: lexer.InstructionToken, Value: "jmp"},
-		{Type: lexer.HexadecimalToken, Value: "0x10000"},
 	}
 	tokens := lexer.Tokenize(ReadFile("./test/1/program.s"))
 	if len(tokens) != len(expected) {

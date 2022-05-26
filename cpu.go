@@ -1,9 +1,9 @@
-package main
+package vm
 
 import (
 	"fmt"
 
-	"github.com/tvanriel/cpu-emulator/operations"
+	"github.com/tvanriel/vm/operations"
 )
 
 const PC_START_LOCATION = 0x1_ff_f6 // 9-bytes under rom-top.  Enough for JMP instr + 8 byte addressing.

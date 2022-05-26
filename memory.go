@@ -1,4 +1,4 @@
-package main
+package vm
 
 const MEM_SIZE_MAX uint64 = 0xFF_FF
 const MEM_ADDR_START = 0x00_00

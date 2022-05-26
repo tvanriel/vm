@@ -1,9 +1,9 @@
-package main
+package vm
 
 import (
 	"math"
 
-	op "github.com/tvanriel/cpu-emulator/operations"
+	op "github.com/tvanriel/vm/operations"
 )
 
 type Operation func(c *CPU)

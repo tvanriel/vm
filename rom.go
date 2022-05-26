@@ -1,4 +1,4 @@
-package main
+package vm
 
 const ROM_SIZE_MAX uint64 = 0xFF_FF
 const ROM_ADDR_START Address = 0x1_00_00

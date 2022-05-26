@@ -33,6 +33,9 @@ const (
 	SlashSign
 	EqualsSign
 
+	OpGreaterThan
+	OpLessThan
+
 	PeriodSign
 	ParenthesisOpen
 	ParenthesisClose
@@ -68,6 +71,8 @@ const asterisk = '*'
 const caret = '^'
 const pipe = '|'
 const ampersand = '&'
+const lessthan = '<'
+const greaterthan = '>'
 const slash = '/'
 const parenthesisOpen = '('
 const pathentesisClose = ')'
@@ -82,6 +87,8 @@ const directive = lowercase
 
 // Lex any valid line
 func LexLine(l *lex.L) lex.StateFunc {
+	l.Take("\n")
+	l.Ignore()
 	if l.Peek() == lex.EOFRune {
 		return nil
 	}
@@ -129,6 +136,9 @@ func LexConstAssignment(l *lex.L) lex.StateFunc {
 
 // Lex an instruction, skipping over the indented whitespace.
 func LexInstruction(l *lex.L) lex.StateFunc {
+	if l.Peek() == semicolon {
+		return LexComment
+	}
 	l.Take(instruction)
 	if l.Current() == "" {
 		l.Ignore()
@@ -217,6 +227,16 @@ func LexOperator(l *lex.L) {
 	if l.Peek() == asterisk {
 		l.Next()
 		l.Emit(AsteriskSign)
+	}
+	if l.Peek() == lessthan {
+		l.Next()
+		l.Next()
+		l.Emit(OpLessThan)
+	}
+	if l.Peek() == greaterthan {
+		l.Next()
+		l.Next()
+		l.Emit(OpGreaterThan)
 	}
 }
 

@@ -1,10 +1,11 @@
 package parser
 
 import (
+	"fmt"
 	"strconv"
 
 	lex "github.com/bbuck/go-lexer"
-	"github.com/tvanriel/cpu-emulator/assembler/lexer"
+	"github.com/tvanriel/vm/assembler/lexer"
 )
 
 type register int64
@@ -44,6 +45,9 @@ func Parse(tokens []*lex.Token) (*ParseContext, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(consts)
+	ctx := &ParseContext{}
+	return ctx, nil
 }
 
 func ExploreConstants(tokens []*lex.Token) (Constants, error) {
@@ -84,17 +88,21 @@ func ExploreConstants(tokens []*lex.Token) (Constants, error) {
 			}
 		}
 	}
+	return consts, nil
 }
 
 func ParseHex(str string) (int64, error) {
 	return strconv.ParseInt(str[2:], 16, 64)
 }
+
 func ParseBin(str string) (int64, error) {
 	return strconv.ParseInt(str[2:], 2, 64)
 }
+
 func ParseOct(str string) (int64, error) {
 	return strconv.ParseInt(str[2:], 8, 64)
 }
+
 func ParseDec(str string) (int64, error) {
 	return strconv.ParseInt(str[2:], 10, 64)
 }
