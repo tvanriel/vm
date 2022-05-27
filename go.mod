@@ -9,7 +9,10 @@ require (
 	github.com/veandco/go-sdl2 v0.4.20
 )
 
+require github.com/sergi/go-diff v1.2.0 // indirect
+
 require (
+	github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect

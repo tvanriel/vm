@@ -1,6 +1,9 @@
 package preprocessor
 
 import (
+	"fmt"
+	"strings"
+
 	lex "github.com/bbuck/go-lexer"
 )
 
@@ -68,9 +71,8 @@ func Parse(tokens []*lex.Token) *AST {
 		Cur:    0,
 		AST:    &AST{},
 	}
-	state := ParseTextOrDirective
 	for p.HasTokens() {
-		state(p)
+		ParseTextOrDirective(p)
 	}
 	return p.AST
 }
@@ -81,9 +83,8 @@ func ParseTextOrDirective(p *Parser) {
 		return
 	}
 	if currentToken.Type == TextToken {
-		if currentToken.Value == "" {
+		if strings.TrimSpace(currentToken.Value) == "" {
 			p.Next() // Not saving this one since it has no content.  Skip.
-			ParseTextOrDirective(p)
 			return
 		}
 		p.AddChild(&AST{
@@ -91,41 +92,85 @@ func ParseTextOrDirective(p *Parser) {
 			ValueString: currentToken.Value,
 		})
 		p.Next()
-		ParseTextOrDirective(p)
 		return
 	}
 	if currentToken.Value == DefineDirective {
 		ParseDefine(p)
+		return
 	}
 	if currentToken.Value == IfDefinedDirective {
 		ParseInsideIfDef(p)
+		return
 	}
+	if currentToken.Value == IfNotDefinedDirective {
+		ParseInsideIfNotDef(p)
+		return
+	}
+
 	if currentToken.Value == IncludeDirective {
 		ParseInclude(p)
+		return
 	}
 }
 
 func ParseInsideIfDef(p *Parser) {
+	root := p.AST
 	ifNode := &AST{
-		Parent:      p.AST,
+		Parent:      root,
 		ValueType:   IfDefinedDirectiveNode,
 		ValueString: IfDefinedDirective,
 	}
-	p.Next()
-	currentToken := p.Current()
+	p.Next() // read over the if
 	ifNode.Children = append(ifNode.Children, &AST{
 		ValueType:   ConstantNode,
-		ValueString: currentToken.Value,
+		ValueString: p.Current().Value,
 	})
-	p.Next()
+	p.AddChild(ifNode)
+	p.Next() // read over the constant
+	p.AST = ifNode
 	for p.Current().Type != DirectiveToken && p.Current().Value != EndifDirective {
 		ParseTextOrDirective(p)
-		p.Next()
 	}
+
 	p.AddChild(&AST{
 		ValueType:   EndifDirectiveNode,
 		ValueString: EndifDirective,
 	})
+
+	p.AST = root
+
+	p.Next()
+
+}
+
+func ParseInsideIfNotDef(p *Parser) {
+	root := p.AST
+	ifNode := &AST{
+		Parent:      root,
+		ValueType:   IfNotDefinedDirectiveNode,
+		ValueString: IfNotDefinedDirective,
+	}
+	p.Next() // read over the if
+	ifNode.Children = append(ifNode.Children, &AST{
+		ValueType:   ConstantNode,
+		ValueString: p.Current().Value,
+	})
+	p.AddChild(ifNode)
+	p.Next() // read over the constant
+	p.AST = ifNode
+	for p.Current().Type != DirectiveToken && p.Current().Value != EndifDirective {
+		fmt.Printf("%d: %v, %v", p.Cur, p.Current().Type != DirectiveToken, p.Current().Value != EndifDirective)
+		ParseTextOrDirective(p)
+	}
+
+	p.AddChild(&AST{
+		ValueType:   EndifDirectiveNode,
+		ValueString: EndifDirective,
+	})
+
+	p.AST = root
+
+	p.Next()
 }
 
 func ParseDefine(p *Parser) {
@@ -140,6 +185,7 @@ func ParseDefine(p *Parser) {
 			},
 		},
 	})
+	p.Next()
 }
 
 func ParseInclude(p *Parser) {

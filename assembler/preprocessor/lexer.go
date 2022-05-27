@@ -26,8 +26,8 @@ const (
 func LexText(l *lex.L) lex.StateFunc {
 	onStartOfLine := true
 	for !(l.Peek() == '#' && onStartOfLine) {
-		l.Next()
 		onStartOfLine = l.Peek() == '\n'
+		l.Next()
 		if l.Peek() == lex.EOFRune {
 			l.Next()
 			l.Emit(TextToken)

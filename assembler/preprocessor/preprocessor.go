@@ -75,20 +75,25 @@ func stringifyLeaf(ast *AST, constants *[]string, sb *strings.Builder) {
 		return
 	}
 	if ast.ValueType == IfDefinedDirectiveNode {
-		if constIsDefined(constants, ast.Children[0].ValueString) {
-			for _, child := range ast.Children[1:] {
-				stringifyLeaf(child, constants, sb)
-			}
+		if len(ast.Children) <= 2 {
 			return
 		}
+		if constIsDefined(constants, ast.Children[0].ValueString) {
+			for _, child := range ast.Children[1 : len(ast.Children)-1] {
+				stringifyLeaf(child, constants, sb)
+			}
+		}
+		return
 	}
 
 	if ast.ValueType == IfNotDefinedDirectiveNode {
+		if len(ast.Children) <= 2 {
+			return
+		}
 		if !constIsDefined(constants, ast.Children[0].ValueString) {
-			for _, child := range ast.Children[1:] {
+			for _, child := range ast.Children[1 : len(ast.Children)-1] {
 				stringifyLeaf(child, constants, sb)
 			}
-			return
 		}
 	}
 	fmt.Println("How could this happened?!")
