@@ -1,7 +1,6 @@
 package preprocessor
 
 import (
-	"fmt"
 	"strings"
 
 	lex "github.com/bbuck/go-lexer"
@@ -123,7 +122,6 @@ func ParseInsideIfNotDef(p *parse.Parser) {
 	p.Next() // read over the constant
 	p.AST = ifNode
 	for p.Current().Type != DirectiveToken && p.Current().Value != EndifDirective {
-		fmt.Printf("%d: %v, %v", p.Cur, p.Current().Type != DirectiveToken, p.Current().Value != EndifDirective)
 		ParseTextOrDirective(p)
 	}
 

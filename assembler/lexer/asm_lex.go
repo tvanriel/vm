@@ -182,26 +182,31 @@ func LexExpression(l *lex.L) {
 		return
 	}
 	if l.Peek() == parenthesisOpen {
-		l.Next()
+		l.Next() // get (
 		l.Emit(ParenthesisOpen)
 		SkipWhitespace(l)
+		peeked = l.Peek()
 	}
 	if strings.ContainsRune(constant, peeked) {
 		LexConstant(l)
 		SkipWhitespace(l)
+		peeked = l.Peek()
 	}
 
 	if strings.ContainsRune(decimal, peeked) {
 		LexNumber(l)
 		SkipWhitespace(l)
+		peeked = l.Peek()
 	}
 
 	if strings.ContainsRune(operators, peeked) {
 		LexOperator(l)
 
 		SkipWhitespace(l)
+		peeked = l.Peek()
 		if strings.ContainsRune(constant, peeked) {
 			LexConstant(l)
+			peeked = l.Peek()
 		}
 
 		if strings.ContainsRune(decimal, peeked) {
@@ -226,10 +231,17 @@ func LexOperator(l *lex.L) {
 		l.Next()
 		l.Emit(MinusSign)
 	}
+
 	if l.Peek() == asterisk {
 		l.Next()
 		l.Emit(AsteriskSign)
 	}
+
+	if l.Peek() == slash {
+		l.Next()
+		l.Emit(SlashSign)
+	}
+
 	if l.Peek() == lessthan {
 		l.Next()
 		l.Next()
@@ -386,7 +398,6 @@ func Tokenize(source string) []*lex.Token {
 		if done {
 			return tokens
 		}
-		fmt.Println(token.Value)
 		tokens = append(tokens, token)
 	}
 }

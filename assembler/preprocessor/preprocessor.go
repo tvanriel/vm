@@ -1,7 +1,6 @@
 package preprocessor
 
 import (
-	"fmt"
 	"io/ioutil"
 	"strings"
 
@@ -33,7 +32,6 @@ func processDependencies(ast *parse.AST, n *int) error {
 		if err != nil {
 			return err
 		}
-		ast.Parent.Children = child.Children
 		ast.Children = child.Children
 		ast.ValueString = child.ValueString
 		ast.ValueType = child.ValueType
@@ -98,7 +96,6 @@ func stringifyLeaf(ast *parse.AST, constants *[]string, sb *strings.Builder) {
 			}
 		}
 	}
-	fmt.Println("How could this happened?!")
 }
 
 func constIsDefined(constants *[]string, name string) bool {

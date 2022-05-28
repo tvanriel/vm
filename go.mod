@@ -6,7 +6,7 @@ require (
 	github.com/bbuck/go-lexer v1.0.0
 	github.com/gdamore/tcell/v2 v2.5.1
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
-	github.com/tvanriel/go-parser v0.0.0-20220528002001-b59329420b3b
+	github.com/tvanriel/go-parser v0.0.0-20220528021756-8dec789b862f
 	github.com/veandco/go-sdl2 v0.4.21
 )
 
