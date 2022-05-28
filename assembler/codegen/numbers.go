@@ -51,5 +51,5 @@ func ParseOct(str string) (uint64, error) {
 }
 
 func ParseDec(str string) (uint64, error) {
-	return strconv.ParseUint(str[2:], 10, 64)
+	return strconv.ParseUint(str, 10, 64)
 }

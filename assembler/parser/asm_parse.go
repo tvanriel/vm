@@ -11,6 +11,7 @@ const (
 
 	ConstantNode
 	ExpressionNode
+	WordNode
 
 	HexadecimalNumberNode
 	OctalNumberNode
@@ -76,6 +77,15 @@ func ParseConstant(p *parse.Parser) {
 }
 
 func ParseExpression(p *parse.Parser) {
+
+	if p.Current().Type == lexer.WordToken {
+		p.AddChild(&parse.AST{
+			ValueType:   WordNode,
+			ValueString: p.Current().Value,
+		})
+		p.Next()
+		return
+	}
 
 	if IsNumber(p.Current().Type) {
 		p.AddChild(&parse.AST{
@@ -218,7 +228,7 @@ func ParseInstruction(p *parse.Parser) {
 		p.AST = root
 		return
 	}
-	for p.Current().Type == lexer.ConstantToken || p.Current().Type == lexer.ParenthesisOpen || IsNumber(p.Current().Type) {
+	for p.Current().Type == lexer.ConstantToken || p.Current().Type == lexer.ParenthesisOpen || IsNumber(p.Current().Type) || p.Current().Type == lexer.WordToken {
 		ParseExpression(p)
 		if p.Current() == nil {
 			break

@@ -374,7 +374,51 @@ func OpRet(c *CPU) {
 	c.PC = int64fromqword(popQWordFromStack(c))
 }
 
+// POP
+func OpPopQWordA(c *CPU) { c.A = int64fromqword(popQWordFromStack(c)) }
+func OpPopQWordB(c *CPU) { c.B = int64fromqword(popQWordFromStack(c)) }
+func OpPopQWordX(c *CPU) { c.X = int64fromqword(popQWordFromStack(c)) }
+func OpPopQWordY(c *CPU) { c.Y = int64fromqword(popQWordFromStack(c)) }
+
+func OpPopDWordA(c *CPU) { c.A = int64fromdword(popDWordFromStack(c)) }
+func OpPopDWordB(c *CPU) { c.B = int64fromdword(popDWordFromStack(c)) }
+func OpPopDWordX(c *CPU) { c.X = int64fromdword(popDWordFromStack(c)) }
+func OpPopDWordY(c *CPU) { c.Y = int64fromdword(popDWordFromStack(c)) }
+
+func OpPopWordA(c *CPU) { c.A = int64fromword(popWordFromStack(c)) }
+func OpPopWordB(c *CPU) { c.B = int64fromword(popWordFromStack(c)) }
+func OpPopWordX(c *CPU) { c.X = int64fromword(popWordFromStack(c)) }
+func OpPopWordY(c *CPU) { c.Y = int64fromword(popWordFromStack(c)) }
+
+func OpPopByteA(c *CPU) { c.A = uint64(popByteFromStack(c)) }
+func OpPopByteB(c *CPU) { c.B = uint64(popByteFromStack(c)) }
+func OpPopByteX(c *CPU) { c.X = uint64(popByteFromStack(c)) }
+func OpPopByteY(c *CPU) { c.Y = uint64(popByteFromStack(c)) }
+
 // PUSH
+func OpPushQWordA(c *CPU)   { addQwordToStack(qwordfromint64(c.A), c) }
+func OpPushQWordB(c *CPU)   { addQwordToStack(qwordfromint64(c.B), c) }
+func OpPushQWordX(c *CPU)   { addQwordToStack(qwordfromint64(c.X), c) }
+func OpPushQWordY(c *CPU)   { addQwordToStack(qwordfromint64(c.Y), c) }
+func OpPushQWordAbs(c *CPU) { addQwordToStack(getQword(c), c) }
+
+func OpPushDWordA(c *CPU)   { addDwordToStack(dwordfromint64(c.A), c) }
+func OpPushDWordB(c *CPU)   { addDwordToStack(dwordfromint64(c.B), c) }
+func OpPushDWordX(c *CPU)   { addDwordToStack(dwordfromint64(c.X), c) }
+func OpPushDWordY(c *CPU)   { addDwordToStack(dwordfromint64(c.Y), c) }
+func OpPushDWordAbs(c *CPU) { addDwordToStack(getDword(c), c) }
+
+func OpPushWordA(c *CPU)   { addWordToStack(wordfromint64(c.A), c) }
+func OpPushWordB(c *CPU)   { addWordToStack(wordfromint64(c.B), c) }
+func OpPushWordX(c *CPU)   { addWordToStack(wordfromint64(c.X), c) }
+func OpPushWordY(c *CPU)   { addWordToStack(wordfromint64(c.Y), c) }
+func OpPushWordAbs(c *CPU) { addWordToStack(getWord(c), c) }
+
+func OpPushByteA(c *CPU)   { addByteToStack(byte(c.A), c) }
+func OpPushByteB(c *CPU)   { addByteToStack(byte(c.B), c) }
+func OpPushByteX(c *CPU)   { addByteToStack(byte(c.X), c) }
+func OpPushByteY(c *CPU)   { addByteToStack(byte(c.Y), c) }
+func OpPushByteAbs(c *CPU) { addByteToStack(getByte(c), c) }
 
 // Branches
 func OpBps(c *CPU) {
@@ -461,7 +505,7 @@ func init() {
 
 		op.OP_ADD_A_TO_B:   OpAddAToB,
 		op.OP_ADD_ABS_A:    OpAddAbsA,
-		op.OP_SUB_A_FROM_B: OpSubAFromB,
+		op.OP_SUB_B_FROM_A: OpSubAFromB,
 		op.OP_SUB_ABS_A:    OpSubAbsA,
 		op.OP_MUL_A_BY_B:   OpMulAByB,
 		op.OP_MUL_ABS_A:    OpMulAbsA,
@@ -476,14 +520,14 @@ func init() {
 		op.OP_XOR_A_B: OpXorAB,
 		op.OP_XOR_A_X: OpXorAX,
 
-		op.OP_FADD_A_TO_B: OpFaddAToB,
-		op.OP_FADD_ABS_A:  OpFaddAbsA,
-		op.OP_FSUB_A_TO_B: OpFSubAToB,
-		op.OP_FSUB_ABS_A:  OpFSubAbsA,
-		op.OP_FMUL_A_BY_B: OpFmulAByB,
-		op.OP_FMUL_ABS_A:  OpFmulAbsA,
-		op.OP_FDIV_A_BY_B: OpFDivAByB,
-		op.OP_FDIV_ABS_A:  OpFDivAbsA,
+		op.OP_FADD_A_TO_B:   OpFaddAToB,
+		op.OP_FADD_ABS_A:    OpFaddAbsA,
+		op.OP_FSUB_B_FROM_A: OpFSubAToB,
+		op.OP_FSUB_ABS_A:    OpFSubAbsA,
+		op.OP_FMUL_A_BY_B:   OpFmulAByB,
+		op.OP_FMUL_ABS_A:    OpFmulAbsA,
+		op.OP_FDIV_A_BY_B:   OpFDivAByB,
+		op.OP_FDIV_ABS_A:    OpFDivAbsA,
 
 		op.OP_LEA_BYTE_A: OpLeaByteA,
 		op.OP_LEA_BYTE_B: OpLeaByteB,
@@ -568,40 +612,44 @@ func init() {
 		op.OP_INC_X: OpIncX,
 		op.OP_INC_Y: OpIncY,
 
-		op.OP_PUSH_BYTE_A: OpPushByteA,
-		op.OP_PUSH_BYTE_B: OpPushByteB,
-		op.OP_PUSH_BYTE_X: OpPushByteX,
-		op.OP_PUSH_BYTE_Y: OpPushByteY,
+		op.OP_PUSH_BYTE_A:   OpPushByteA,
+		op.OP_PUSH_BYTE_B:   OpPushByteB,
+		op.OP_PUSH_BYTE_X:   OpPushByteX,
+		op.OP_PUSH_BYTE_Y:   OpPushByteY,
+		op.OP_PUSH_ABS_BYTE: OpPushByteAbs,
 
 		op.OP_POP_BYTE_A: OpPopByteA,
 		op.OP_POP_BYTE_B: OpPopByteB,
 		op.OP_POP_BYTE_X: OpPopByteX,
 		op.OP_POP_BYTE_Y: OpPopByteY,
 
-		op.OP_PUSH_WORD_A: OpPushWordA,
-		op.OP_PUSH_WORD_B: OpPushWordB,
-		op.OP_PUSH_WORD_X: OpPushWordX,
-		op.OP_PUSH_WORD_Y: OpPushWordY,
+		op.OP_PUSH_WORD_A:   OpPushWordA,
+		op.OP_PUSH_WORD_B:   OpPushWordB,
+		op.OP_PUSH_WORD_X:   OpPushWordX,
+		op.OP_PUSH_WORD_Y:   OpPushWordY,
+		op.OP_PUSH_ABS_WORD: OpPushWordAbs,
 
 		op.OP_POP_WORD_A: OpPopWordY,
 		op.OP_POP_WORD_B: OpPopWordY,
 		op.OP_POP_WORD_X: OpPopWordY,
 		op.OP_POP_WORD_Y: OpPopWordY,
 
-		op.OP_PUSH_DWORD_A: OpPushDWordA,
-		op.OP_PUSH_DWORD_B: OpPushDWordA,
-		op.OP_PUSH_DWORD_X: OpPushDWordX,
-		op.OP_PUSH_DWORD_Y: OpPushDWordY,
+		op.OP_PUSH_DWORD_A:   OpPushDWordA,
+		op.OP_PUSH_DWORD_B:   OpPushDWordA,
+		op.OP_PUSH_DWORD_X:   OpPushDWordX,
+		op.OP_PUSH_DWORD_Y:   OpPushDWordY,
+		op.OP_PUSH_ABS_DWORD: OpPushDWordAbs,
 
 		op.OP_POP_DWORD_A: OpPopDWordA,
 		op.OP_POP_DWORD_B: OpPopDWordY,
 		op.OP_POP_DWORD_X: OpPopDWordY,
 		op.OP_POP_DWORD_Y: OpPopDWordY,
 
-		op.OP_PUSH_QWORD_A: OpPushQWordA,
-		op.OP_PUSH_QWORD_B: OpPushQWordB,
-		op.OP_PUSH_QWORD_X: OpPushQWordX,
-		op.OP_PUSH_QWORD_Y: OpPushQWordY,
+		op.OP_PUSH_QWORD_A:   OpPushQWordA,
+		op.OP_PUSH_QWORD_B:   OpPushQWordB,
+		op.OP_PUSH_QWORD_X:   OpPushQWordX,
+		op.OP_PUSH_QWORD_Y:   OpPushQWordY,
+		op.OP_PUSH_ABS_QWORD: OpPushQWordAbs,
 
 		op.OP_POP_QWORD_A: OpPopQWordY,
 		op.OP_POP_QWORD_B: OpPopQWordY,

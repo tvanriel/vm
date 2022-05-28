@@ -1,6 +1,7 @@
 package assembler
 
 import (
+	"fmt"
 	"io/ioutil"
 	"strings"
 	"testing"
@@ -147,4 +148,49 @@ func TestConstResolver(t *testing.T) {
 			t.Errorf("Expected value for %s to be but got %x", k, v)
 		}
 	}
+}
+
+func TestLabelResolver(t *testing.T) {
+	str, _ := preprocessor.Process("./test/resolver_1/prg.s")
+	ast, err := parser.Parse(lexer.Tokenize(str))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	consts, err := codegen.ResolveConsts(ast)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	labels, err := codegen.ResolveLabels(ast, &consts)
+	fmt.Println(labels)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+func TestStringify(t *testing.T) {
+	str, _ := preprocessor.Process("./test/resolver_1/prg.s")
+	ast, err := parser.Parse(lexer.Tokenize(str))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	consts, err := codegen.ResolveConsts(ast)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	labels, err := codegen.ResolveLabels(ast, &consts)
+	fmt.Println(labels)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	instructions, err := codegen.Stringify(labels)
+	if err != nil {
+		t.Error(err)
+	}
+	rom := codegen.Assemble(instructions)
+	fmt.Println(rom)
 }

@@ -2,7 +2,7 @@ package codegen
 
 type Register uint64
 
-type ArgumentType int
+type ArgumentType uint64
 
 const (
 	REGISTER_A Register = iota
@@ -15,11 +15,14 @@ const (
 	RegisterArgument ArgumentType = iota
 	AddressArgument
 	ConstantArgument
+	LabelArgument
 )
 
 type Argument struct {
-	Type  ArgumentType
-	Value uint64
+	Type ArgumentType
+
+	Value       uint64 // Either of these will be filled, based on the type of argument.
+	ValueString string
 }
 
 type Instruction struct {
@@ -30,7 +33,7 @@ type Instruction struct {
 // Get the amount of bytes this instruction wil take in the binary.
 // TODO: use a smarter approach for this.
 func (i *Instruction) Size() int {
-	return (8 * len(i.Arguments)) + 1
+	return len(i.Bytes())
 }
 
 type Label struct {

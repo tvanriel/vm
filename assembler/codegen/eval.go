@@ -37,13 +37,13 @@ func evaluateExpression(expression *goparser.AST, consts *map[string]uint64) (ui
 		if !isOperator(expression.Children[1].ValueString) {
 			return 0, errors.New("eval error: expected operator, got " + expression.Children[1].ValueString)
 		}
-		return op(left, right, expression.Children[1].ValueString), nil
+		return operation(left, right, expression.Children[1].ValueString), nil
 	}
 	return 0, errors.New("Cannot evaluate expression: " + expression.Print(0))
 
 }
 
-func op(left uint64, right uint64, op string) uint64 {
+func operation(left uint64, right uint64, op string) uint64 {
 	switch op {
 	case "+":
 		return left + right

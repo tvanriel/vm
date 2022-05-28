@@ -9,7 +9,7 @@ const (
 	// Integer math operations
 	OP_ADD_A_TO_B   // A += B
 	OP_ADD_ABS_A    // A += (arg)
-	OP_SUB_A_FROM_B // A -= B
+	OP_SUB_B_FROM_A // A -= B
 	OP_SUB_ABS_A    // A -= (arg)
 	OP_MUL_A_BY_B   // A *= B
 	OP_MUL_ABS_A    // A *= (arg)
@@ -24,18 +24,25 @@ const (
 	OP_ROL_X // X = X << 1
 	OP_ROL_Y // Y = Y << 1
 
+	// Rotate-right.  Rightmost bit sets the C flag.
+	OP_ROR_A // A = A >> 1
+	OP_ROR_B // B = B >> 1
+	OP_ROR_X // X = X >> 1
+	OP_ROR_Y // Y = Y >> 1
+
 	OP_XOR_A_B // A^=B
 	OP_XOR_A_X // A^=X
+	OP_XOR_A_Y // A^=Y
 
 	// Floating point math operations
-	OP_FADD_A_TO_B // A += B
-	OP_FADD_ABS_A  // A += (arg)
-	OP_FSUB_A_TO_B // A -= B
-	OP_FSUB_ABS_A  // A -= (arg)
-	OP_FMUL_A_BY_B // A *= B
-	OP_FMUL_ABS_A  // A *= (arg)
-	OP_FDIV_A_BY_B // A /= B
-	OP_FDIV_ABS_A  // A /= (arg)
+	OP_FADD_A_TO_B   // A += B
+	OP_FADD_ABS_A    // A += (arg)
+	OP_FSUB_B_FROM_A // A -= B
+	OP_FSUB_ABS_A    // A -= (arg)
+	OP_FMUL_A_BY_B   // A *= B
+	OP_FMUL_ABS_A    // A *= (arg)
+	OP_FDIV_A_BY_B   // A /= B
+	OP_FDIV_ABS_A    // A /= (arg)
 
 	// Memory operations
 
@@ -82,10 +89,10 @@ const (
 	OP_SET_QWORD_Y // Y = Mem[PC+1:PC+8]
 
 	// Store address
-	OP_STR_BYTE  // Mem[B] = A[:1]
-	OP_STR_WORD  // Mem[B:B+2] = A[:2]
-	OP_STR_DWORD // Mem[B:B+4] = A[:4]
-	OP_STR_QWORD // Mem[B:B+8] = A
+	OP_STR_BYTE  // Mem[PC+1]    = A[:1]
+	OP_STR_WORD  // Mem[PC:PC+2] = A[:2]
+	OP_STR_DWORD // Mem[PC:PC+4] = A[:4]
+	OP_STR_QWORD // Mem[PC:PC+8] = A
 
 	// Jumps
 	OP_JSR_ABS // Jump to (arg)
@@ -133,40 +140,44 @@ const (
 	OP_INC_Y // Y++
 
 	// Stack operations
-	OP_PUSH_BYTE_A // Push val of A on the stack
-	OP_PUSH_BYTE_B // Push val of B on the stack
-	OP_PUSH_BYTE_X // Push val of X on the stack
-	OP_PUSH_BYTE_Y // Push val of Y on the stack
+	OP_PUSH_BYTE_A   // Push val of A on the stack
+	OP_PUSH_BYTE_B   // Push val of B on the stack
+	OP_PUSH_BYTE_X   // Push val of X on the stack
+	OP_PUSH_BYTE_Y   // Push val of Y on the stack
+	OP_PUSH_ABS_BYTE // Push val of PC+1 on the stack
 
 	OP_POP_BYTE_A // Pop top of stack onto A
 	OP_POP_BYTE_B // Pop top of stack onto B
 	OP_POP_BYTE_X // Pop top of stack onto X
 	OP_POP_BYTE_Y // Pop top of stack onto Y
 
-	OP_PUSH_WORD_A // Push val of A on the stack
-	OP_PUSH_WORD_B // Push val of B on the stack
-	OP_PUSH_WORD_X // Push val of X on the stack
-	OP_PUSH_WORD_Y // Push val of Y on the stack
+	OP_PUSH_WORD_A   // Push val of A on the stack
+	OP_PUSH_WORD_B   // Push val of B on the stack
+	OP_PUSH_WORD_X   // Push val of X on the stack
+	OP_PUSH_WORD_Y   // Push val of Y on the stack
+	OP_PUSH_ABS_WORD // Push val of Mem[PC+1:PC+2] on the stack
 
 	OP_POP_WORD_A // Pop top of stack onto A
 	OP_POP_WORD_B // Pop top of stack onto B
 	OP_POP_WORD_X // Pop top of stack onto X
 	OP_POP_WORD_Y // Pop top of stack onto Y
 
-	OP_PUSH_DWORD_A // Push val of A on the stack
-	OP_PUSH_DWORD_B // Push val of B on the stack
-	OP_PUSH_DWORD_X // Push val of X on the stack
-	OP_PUSH_DWORD_Y // Push val of Y on the stack
+	OP_PUSH_DWORD_A   // Push val of A on the stack
+	OP_PUSH_DWORD_B   // Push val of B on the stack
+	OP_PUSH_DWORD_X   // Push val of X on the stack
+	OP_PUSH_DWORD_Y   // Push val of Y on the stack
+	OP_PUSH_ABS_DWORD // Push val of Mem[PC+1:PC+4] on the stack
 
 	OP_POP_DWORD_A // Pop top of stack onto A
 	OP_POP_DWORD_B // Pop top of stack onto B
 	OP_POP_DWORD_X // Pop top of stack onto X
 	OP_POP_DWORD_Y // Pop top of stack onto Y
 
-	OP_PUSH_QWORD_A // Push val of A on the stack
-	OP_PUSH_QWORD_B // Push val of B on the stack
-	OP_PUSH_QWORD_X // Push val of X on the stack
-	OP_PUSH_QWORD_Y // Push val of Y on the stack
+	OP_PUSH_QWORD_A   // Push val of A on the stack
+	OP_PUSH_QWORD_B   // Push val of B on the stack
+	OP_PUSH_QWORD_X   // Push val of X on the stack
+	OP_PUSH_QWORD_Y   // Push val of Y on the stack
+	OP_PUSH_ABS_QWORD // Push val of Mem[PC+1:PC+8] on the stack
 
 	OP_POP_QWORD_A // Pop top of stack onto A
 	OP_POP_QWORD_B // Pop top of stack onto B
