@@ -2,12 +2,12 @@ package assembler
 
 import (
 	"io/ioutil"
-	"log"
 	"strings"
 	"testing"
 
 	"github.com/andreyvit/diff"
 	lex "github.com/bbuck/go-lexer"
+	"github.com/tvanriel/vm/assembler/codegen"
 	"github.com/tvanriel/vm/assembler/lexer"
 	"github.com/tvanriel/vm/assembler/parser"
 	"github.com/tvanriel/vm/assembler/preprocessor"
@@ -26,14 +26,17 @@ func ReadFile(filename string) string {
 func TestPreprocess1(t *testing.T) {
 	str, err := preprocessor.Process("test/preprocessor_include/prg.s")
 	if err != nil {
-		log.Fatalln("Failed to preprocess file: " + err.Error())
+		t.Error("Failed to preprocess file: " + err.Error())
+		return
 	}
 	if len(str) != len(expected1) {
 		t.Errorf("Expected string length to be %d but got %d", len(expected1), len(str))
+		return
 	}
 
 	if a, e := strings.TrimSpace(str), strings.TrimSpace(expected1); a != e {
 		t.Errorf("Result not as expected:\n%v", diff.LineDiff(e, a))
+		return
 	}
 }
 
@@ -42,14 +45,17 @@ var expected2 = "\n\nmain:\n    lda 123123"
 func TestPreprocess2(t *testing.T) {
 	str, err := preprocessor.Process("test/preprocessor_ifndef/prg.s")
 	if err != nil {
-		log.Fatalln("Failed to preprocess file: " + err.Error())
+		t.Error("Failed to preprocess file: " + err.Error())
+		return
 	}
 	if len(str) != len(expected2) {
 		t.Errorf("Expected string length to be %d but got %d", len(expected2), len(str))
+		return
 	}
 
 	if a, e := strings.TrimSpace(str), strings.TrimSpace(expected2); a != e {
 		t.Errorf("Result not as expected:\n%v", diff.LineDiff(e, a))
+		return
 	}
 }
 
@@ -58,14 +64,17 @@ var expected3 = "\n\nmain:\n    lda 123123\n"
 func TestPreprocess3(t *testing.T) {
 	str, err := preprocessor.Process("test/preprocessor_ifdef/prg.s")
 	if err != nil {
-		log.Fatalln("Failed to preprocess file: " + err.Error())
+		t.Error("Failed to preprocess file: " + err.Error())
+		return
 	}
 	if len(str) != len(expected3) {
 		t.Errorf("Expected string length to be %d but got %d", len(expected3), len(str))
+		return
 	}
 
 	if a, e := strings.TrimSpace(str), strings.TrimSpace(expected3); a != e {
 		t.Errorf("Result not as expected:\n%v", diff.LineDiff(e, a))
+		return
 	}
 }
 
@@ -110,6 +119,32 @@ func TestParser(t *testing.T) {
 	ast, err := parser.Parse(lexer.Tokenize(str))
 	if err != nil {
 		t.Error(err)
+		return
 	}
 	t.Log(ast)
+}
+
+var expectedConsts = map[string]uint64{
+	"ROM_START":      0x10000,
+	"ROM_END":        0x10000 + 0xffff,
+	"DISPLAY_ENABLE": 0x10000 + 0x10000 + 0xffff,
+}
+
+func TestConstResolver(t *testing.T) {
+	str, _ := preprocessor.Process("./test/resolver_1/prg.s")
+	ast, err := parser.Parse(lexer.Tokenize(str))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	consts, err := codegen.ResolveConsts(ast)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	for k, v := range consts {
+		if expectedConsts[k] != v {
+			t.Errorf("Expected value for %s to be but got %x", k, v)
+		}
+	}
 }

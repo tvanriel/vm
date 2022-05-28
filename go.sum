@@ -34,6 +34,8 @@ github.com/tvanriel/go-parser v0.0.0-20220528005517-c4286eec4cd4 h1:j5ZU91HOdGR7
 github.com/tvanriel/go-parser v0.0.0-20220528005517-c4286eec4cd4/go.mod h1:FALn71zfotuRsENTTK4yYtafbe/w28SqcsNc8nE5WxE=
 github.com/tvanriel/go-parser v0.0.0-20220528021756-8dec789b862f h1:pnMVfaM6LB9iJl8T2zUAxH3/kvppQq/1bIwMGAYVxeY=
 github.com/tvanriel/go-parser v0.0.0-20220528021756-8dec789b862f/go.mod h1:FALn71zfotuRsENTTK4yYtafbe/w28SqcsNc8nE5WxE=
+github.com/tvanriel/go-parser v0.0.0-20220528034442-9f9e1a505a69 h1:s+GMImsr7OcBpnF9HO57FUDIB+dGu5YMHyjZeJdoYyc=
+github.com/tvanriel/go-parser v0.0.0-20220528034442-9f9e1a505a69/go.mod h1:FALn71zfotuRsENTTK4yYtafbe/w28SqcsNc8nE5WxE=
 github.com/veandco/go-sdl2 v0.4.21 h1:85AtFYv3vSPZvyOOxkJ03sHoJe8ESjPSZLr0KueQtVY=
 github.com/veandco/go-sdl2 v0.4.21/go.mod h1:OROqMhHD43nT4/i9crJukyVecjPNYYuCofep6SNiAjY=
 golang.org/x/sys v0.0.0-20201119102817-f84b799fce68/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=

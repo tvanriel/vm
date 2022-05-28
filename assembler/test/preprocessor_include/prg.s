@@ -1,4 +1,4 @@
-#include "test/1/include.s"
+#include "test/preprocessor_include/include.s"
 
 main:
     jmp labdef
