@@ -1,11 +1,9 @@
 package codegen
 
-import (
-	"io"
+var magic = []byte("EXECVM")
 
-	"github.com/tvanriel/vm/assembler/parser"
-)
+const rom_start = 0x10000
+const version = 0x1
 
-func Write(ast parser.AST, out io.WriteCloser) {
-
-}
+const CHECKSUM_LENGTH = 8
+const PROGRAM_ID_LENGTH = 24

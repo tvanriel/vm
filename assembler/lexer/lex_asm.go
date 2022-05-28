@@ -125,6 +125,7 @@ func LexConstAssignment(l *lex.L) lex.StateFunc {
 	if l.Peek() == equals {
 		l.Next()
 		l.Emit(EqualsSign)
+		SkipWhitespace(l)
 	}
 	LexExpression(l)
 
@@ -163,18 +164,19 @@ func LexInstruction(l *lex.L) lex.StateFunc {
 }
 
 func LexExpression(l *lex.L) {
-	if strings.ContainsRune(label, l.Peek()) {
+	peeked := l.Peek()
+	if strings.ContainsRune(label, peeked) {
 		l.Take(label)
 		l.Emit(WordToken)
 		SkipWhitespace(l)
 		return
 	}
-	if strings.ContainsRune(decimal, l.Peek()) {
+	if strings.ContainsRune(decimal, peeked) {
 		LexNumber(l)
 		SkipWhitespace(l)
 		return
 	}
-	if strings.ContainsRune(constant, l.Peek()) {
+	if strings.ContainsRune(constant, peeked) {
 		LexConstant(l)
 		SkipWhitespace(l)
 		return
@@ -184,25 +186,25 @@ func LexExpression(l *lex.L) {
 		l.Emit(ParenthesisOpen)
 		SkipWhitespace(l)
 	}
-	if strings.ContainsRune(constant, l.Peek()) {
+	if strings.ContainsRune(constant, peeked) {
 		LexConstant(l)
 		SkipWhitespace(l)
 	}
 
-	if strings.ContainsRune(decimal, l.Peek()) {
+	if strings.ContainsRune(decimal, peeked) {
 		LexNumber(l)
 		SkipWhitespace(l)
 	}
 
-	if strings.ContainsRune(operators, l.Peek()) {
+	if strings.ContainsRune(operators, peeked) {
 		LexOperator(l)
 
 		SkipWhitespace(l)
-		if strings.ContainsRune(constant, l.Peek()) {
+		if strings.ContainsRune(constant, peeked) {
 			LexConstant(l)
 		}
 
-		if strings.ContainsRune(decimal, l.Peek()) {
+		if strings.ContainsRune(decimal, peeked) {
 			LexNumber(l)
 		}
 		SkipWhitespace(l)
@@ -275,7 +277,7 @@ func LexNumber(l *lex.L) {
 }
 
 func LexConstant(l *lex.L) {
-	l.Take(uppercase)
+	l.Take(constant)
 	l.Emit(ConstantToken)
 }
 

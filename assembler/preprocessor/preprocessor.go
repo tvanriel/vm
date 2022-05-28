@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
+
+	parse "github.com/tvanriel/go-parser"
 )
 
 // Scan a file for directives
-func LexAndParse(path string) (*AST, error) {
+func LexAndParse(path string) (*parse.AST, error) {
 	fileContent, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -24,7 +26,7 @@ func LexAndParse(path string) (*AST, error) {
 	return ast, nil
 }
 
-func processDependencies(ast *AST, n *int) error {
+func processDependencies(ast *parse.AST, n *int) error {
 	var err error
 	if ast.ValueType == IncludeDirectiveNode {
 		child, err := LexAndParse(ast.Children[0].ValueString)
@@ -59,7 +61,7 @@ func Process(path string) (string, error) {
 
 }
 
-func stringifyLeaf(ast *AST, constants *[]string, sb *strings.Builder) {
+func stringifyLeaf(ast *parse.AST, constants *[]string, sb *strings.Builder) {
 	if ast.ValueType == NilNode {
 		for _, child := range ast.Children {
 			stringifyLeaf(child, constants, sb)

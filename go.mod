@@ -4,9 +4,10 @@ go 1.17
 
 require (
 	github.com/bbuck/go-lexer v1.0.0
-	github.com/gdamore/tcell/v2 v2.4.1-0.20210905002822-f057f0a857a1
+	github.com/gdamore/tcell/v2 v2.5.1
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
-	github.com/veandco/go-sdl2 v0.4.20
+	github.com/tvanriel/go-parser v0.0.0-20220528002001-b59329420b3b
+	github.com/veandco/go-sdl2 v0.4.21
 )
 
 require github.com/sergi/go-diff v1.2.0 // indirect
@@ -17,7 +18,7 @@ require (
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	golang.org/x/sys v0.0.0-20210309074719-68d13333faf2 // indirect
-	golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
+	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
+	golang.org/x/text v0.3.7 // indirect
 )

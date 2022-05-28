@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	lex "github.com/bbuck/go-lexer"
+	parse "github.com/tvanriel/go-parser"
 )
 
 const (
@@ -15,10 +16,8 @@ const (
 	IncludeDirective      = "#include"
 )
 
-type NodeType int
-
 const (
-	NilNode NodeType = iota
+	NilNode parse.NodeType = iota
 	TextNode
 	IfDefinedDirectiveNode
 	IfNotDefinedDirectiveNode
@@ -30,46 +29,11 @@ const (
 	ConstantNode
 )
 
-type AST struct {
-	Children    []*AST
-	ValueType   NodeType
-	ValueString string
-	Parent      *AST
-}
-
-type Parser struct {
-	Expect []lex.TokenType
-	Tokens []*lex.Token
-	Cur    int
-	AST    *AST
-}
-
-func (p *Parser) Current() *lex.Token {
-	if p.Cur < len(p.Tokens) {
-		return p.Tokens[p.Cur]
-	}
-	return nil
-}
-func (p *Parser) Next() {
-	p.Cur++
-}
-
-func (p *Parser) HasTokens() bool {
-	return p.Cur < len(p.Tokens)
-}
-
-func (p *Parser) AddChild(ast *AST) {
-	ast.Parent = ast
-	p.AST.Children = append(p.AST.Children, ast)
-}
-
-type ParseFunc func(*Parser) ParseFunc
-
-func Parse(tokens []*lex.Token) *AST {
-	p := &Parser{
+func Parse(tokens []*lex.Token) *parse.AST {
+	p := &parse.Parser{
 		Tokens: tokens,
 		Cur:    0,
-		AST:    &AST{},
+		AST:    &parse.AST{},
 	}
 	for p.HasTokens() {
 		ParseTextOrDirective(p)
@@ -77,7 +41,7 @@ func Parse(tokens []*lex.Token) *AST {
 	return p.AST
 }
 
-func ParseTextOrDirective(p *Parser) {
+func ParseTextOrDirective(p *parse.Parser) {
 	currentToken := p.Current()
 	if currentToken == nil {
 		return
@@ -87,7 +51,7 @@ func ParseTextOrDirective(p *Parser) {
 			p.Next() // Not saving this one since it has no content.  Skip.
 			return
 		}
-		p.AddChild(&AST{
+		p.AddChild(&parse.AST{
 			ValueType:   TextNode,
 			ValueString: currentToken.Value,
 		})
@@ -113,15 +77,15 @@ func ParseTextOrDirective(p *Parser) {
 	}
 }
 
-func ParseInsideIfDef(p *Parser) {
+func ParseInsideIfDef(p *parse.Parser) {
 	root := p.AST
-	ifNode := &AST{
+	ifNode := &parse.AST{
 		Parent:      root,
 		ValueType:   IfDefinedDirectiveNode,
 		ValueString: IfDefinedDirective,
 	}
 	p.Next() // read over the if
-	ifNode.Children = append(ifNode.Children, &AST{
+	ifNode.Children = append(ifNode.Children, &parse.AST{
 		ValueType:   ConstantNode,
 		ValueString: p.Current().Value,
 	})
@@ -132,7 +96,7 @@ func ParseInsideIfDef(p *Parser) {
 		ParseTextOrDirective(p)
 	}
 
-	p.AddChild(&AST{
+	p.AddChild(&parse.AST{
 		ValueType:   EndifDirectiveNode,
 		ValueString: EndifDirective,
 	})
@@ -143,15 +107,15 @@ func ParseInsideIfDef(p *Parser) {
 
 }
 
-func ParseInsideIfNotDef(p *Parser) {
+func ParseInsideIfNotDef(p *parse.Parser) {
 	root := p.AST
-	ifNode := &AST{
+	ifNode := &parse.AST{
 		Parent:      root,
 		ValueType:   IfNotDefinedDirectiveNode,
 		ValueString: IfNotDefinedDirective,
 	}
 	p.Next() // read over the if
-	ifNode.Children = append(ifNode.Children, &AST{
+	ifNode.Children = append(ifNode.Children, &parse.AST{
 		ValueType:   ConstantNode,
 		ValueString: p.Current().Value,
 	})
@@ -163,7 +127,7 @@ func ParseInsideIfNotDef(p *Parser) {
 		ParseTextOrDirective(p)
 	}
 
-	p.AddChild(&AST{
+	p.AddChild(&parse.AST{
 		ValueType:   EndifDirectiveNode,
 		ValueString: EndifDirective,
 	})
@@ -173,12 +137,12 @@ func ParseInsideIfNotDef(p *Parser) {
 	p.Next()
 }
 
-func ParseDefine(p *Parser) {
+func ParseDefine(p *parse.Parser) {
 	p.Next()
-	p.AddChild(&AST{
+	p.AddChild(&parse.AST{
 		ValueType:   DefineDirectiveNode,
 		ValueString: DefineDirective,
-		Children: []*AST{
+		Children: []*parse.AST{
 			{
 				ValueType:   ConstantNode,
 				ValueString: p.Current().Value,
@@ -188,12 +152,12 @@ func ParseDefine(p *Parser) {
 	p.Next()
 }
 
-func ParseInclude(p *Parser) {
+func ParseInclude(p *parse.Parser) {
 	p.Next()
-	p.AddChild(&AST{
+	p.AddChild(&parse.AST{
 		ValueType:   IncludeDirectiveNode,
 		ValueString: IncludeDirective,
-		Children: []*AST{
+		Children: []*parse.AST{
 			{
 				ValueType:   StringNode,
 				ValueString: p.Current().Value,
